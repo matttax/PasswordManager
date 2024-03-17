@@ -46,10 +46,11 @@ fun LogInScreen(
         )
         PasswordInputField(
             modifier = Modifier.fillMaxWidth(0.8f),
-            interactionSource = interactionSource
-        ) {
-            focusManager.clearFocus()
-            onPasswordAuth(it)
-        }
+            interactionSource = interactionSource,
+            onDone = {
+                focusManager.clearFocus()
+                onPasswordAuth(it)
+            }
+        )
     }
 }

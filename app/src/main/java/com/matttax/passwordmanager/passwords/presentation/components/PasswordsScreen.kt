@@ -1,13 +1,15 @@
 package com.matttax.passwordmanager.passwords.presentation.components
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.matttax.passwordmanager.passwords.domain.PasswordData
@@ -15,15 +17,19 @@ import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun PasswordsScreen(
-    passwordsFlow: StateFlow<List<PasswordData>>
+    passwordsFlow: StateFlow<List<PasswordData>>,
+    onAdd: (PasswordData, Bitmap?) -> Unit,
+    onRemove: (String) -> Unit
 ) {
     val passwords by passwordsFlow.collectAsState()
+    var showAddDialog by rememberSaveable { mutableStateOf(false) }
+    val clipboardManager = LocalClipboardManager.current
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         floatingActionButton = {
             AddNewButton {
-
+                showAddDialog = true
             }
         },
     ) {
@@ -37,7 +43,9 @@ fun PasswordsScreen(
                 colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer)
             ) {
                 Text(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 7.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 7.dp),
                     textAlign = TextAlign.Center,
                     text = "Passwords",
                     style = MaterialTheme.typography.titleMedium,
@@ -52,9 +60,21 @@ fun PasswordsScreen(
                     count = passwords.size,
                     key = { passwords[it].id }
                 ) { index ->
-                    PasswordItem(passwords[index])
+                    PasswordItem(
+                        passwordData = passwords[index],
+                        onCopyClick = { password ->
+                            password?.let { clipboardManager.setText(AnnotatedString(it)) }
+                        },
+                        onRemoveClick = { onRemove(it) }
+                    )
                 }
             }
         }
+    }
+    if (showAddDialog) {
+        AddPasswordDialog(
+            onAdd = { data, icon -> onAdd(data, icon) },
+            onDismiss = { showAddDialog = false }
+        )
     }
 }

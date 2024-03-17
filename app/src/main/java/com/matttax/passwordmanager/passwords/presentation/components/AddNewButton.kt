@@ -14,9 +14,7 @@ fun AddNewButton(action: () -> Unit) {
         shape = CircleShape,
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onTertiary,
-        onClick = {
-
-        }
+        onClick = action
     ) {
         Icon(
             imageVector = Icons.Default.Add,

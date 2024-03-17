@@ -44,7 +44,11 @@ class MainActivity : AppCompatActivity() {
                         route = "screen"
                     ) {
                         val passwordsViewModel = hiltViewModel<PasswordsViewModel>()
-                        PasswordsScreen(passwordsViewModel.passwords)
+                        PasswordsScreen(
+                            passwordsViewModel.passwords,
+                            passwordsViewModel::savePassword,
+                            passwordsViewModel::removePasswordById
+                        )
                     }
                 }
             }

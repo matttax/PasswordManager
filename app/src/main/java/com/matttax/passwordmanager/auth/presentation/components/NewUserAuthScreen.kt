@@ -16,7 +16,7 @@ import com.matttax.passwordmanager.ui.common.CheckboxOption
 import com.matttax.passwordmanager.ui.common.PasswordInputField
 
 @Composable
-fun NewUserAuthScreen(authViewModel: AuthViewModel, ) {
+fun NewUserAuthScreen(authViewModel: AuthViewModel) {
     var preferBiometry by rememberSaveable { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
     val focusManager = LocalFocusManager.current
@@ -39,16 +39,17 @@ fun NewUserAuthScreen(authViewModel: AuthViewModel, ) {
         )
         PasswordInputField(
             modifier = Modifier.fillMaxWidth(0.8f),
-            interactionSource = interactionSource
-        ) {
-            focusManager.clearFocus()
-            authViewModel.apply {
-                onNewPassword(it)
-                if (preferBiometry) {
-                    onPreferredAuthMethodChanged(AuthMethod.BIOMETRIC)
+            interactionSource = interactionSource,
+            onDone = {
+                focusManager.clearFocus()
+                authViewModel.apply {
+                    onNewPassword(it)
+                    if (preferBiometry) {
+                        onPreferredAuthMethodChanged(AuthMethod.BIOMETRIC)
+                    }
                 }
             }
-        }
+        )
         CheckboxOption(
             modifier = Modifier.fillMaxWidth(0.8f),
             text = "Prefer biometry",

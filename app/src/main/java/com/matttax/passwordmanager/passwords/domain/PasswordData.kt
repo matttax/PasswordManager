@@ -8,5 +8,6 @@ data class PasswordData(
     val id: String = UUID.randomUUID().toString(),
     val login: String? = null,
     val password: String? = null,
+    val webpageUrl: String? = null,
     val iconUri: String? = null
 )

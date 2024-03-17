@@ -22,14 +22,18 @@ import androidx.compose.ui.text.input.VisualTransformation
 fun PasswordInputField(
     modifier: Modifier,
     interactionSource: MutableInteractionSource,
-    onDone: (String) -> Unit
+    onDone: (String) -> Unit,
+    onChange: (String) -> Unit = { }
 ) {
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     TextField(
         modifier = modifier,
         value = password,
-        onValueChange = { password = it },
+        onValueChange = {
+            password = it
+            onChange(it)
+        },
         label = { Text("Password") },
         singleLine = true,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
