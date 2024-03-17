@@ -18,6 +18,7 @@ fun AddNewButton(action: () -> Unit) {
     ) {
         Icon(
             imageVector = Icons.Default.Add,
+            tint = MaterialTheme.colorScheme.onPrimary,
             contentDescription = null
         )
     }

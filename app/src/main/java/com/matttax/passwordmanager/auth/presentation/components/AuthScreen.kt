@@ -1,9 +1,7 @@
 package com.matttax.passwordmanager.auth.presentation.components
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.matttax.passwordmanager.auth.biometric.BiometricAuthenticator
 import com.matttax.passwordmanager.auth.presentation.AuthState
 import com.matttax.passwordmanager.auth.presentation.AuthViewModel
@@ -12,12 +10,16 @@ import com.matttax.passwordmanager.auth.presentation.AuthViewModel
 fun AuthScreen(
     authViewModel: AuthViewModel,
     biometricAuthenticator: BiometricAuthenticator,
-    onSuccess: () -> Unit
+    onSuccess: (isNew: Boolean) -> Unit
 ) {
     val authState by authViewModel.authState.collectAsState()
+    var isNewUser by rememberSaveable { mutableStateOf(false) }
     when (val state = authState) {
-        is AuthState.Successful -> onSuccess()
-        is AuthState.NewUser -> NewUserAuthScreen(authViewModel)
+        is AuthState.Successful -> onSuccess(isNewUser)
+        is AuthState.NewUser -> {
+            isNewUser = true
+            NewUserAuthScreen(authViewModel)
+        }
         is AuthState.LogIn -> LogInScreen(
             authMethod = state.method,
             biometricAuthenticator = biometricAuthenticator,

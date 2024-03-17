@@ -33,6 +33,9 @@ fun PasswordItem(
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer)
         ) {
             AsyncImage(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .align(Alignment.CenterHorizontally),
                 model = passwordData.iconUri,
                 contentDescription = null,
                 contentScale = ContentScale.Fit

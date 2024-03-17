@@ -9,13 +9,19 @@ import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColorScheme(
     primary = MildGreen,
+    primaryContainer = SuperDarkGray,
+    onPrimary = Color.Black,
+    onSecondary = Color.White,
+    onTertiary = Color.LightGray,
+    onPrimaryContainer = MildGreen
 )
 
 private val LightColorPalette = lightColorScheme(
     primary = MildGreen,
     primaryContainer = SuperLightGray,
-    onPrimary = Color.Gray,
+    onPrimary = Color.White,
     onSecondary = Color.Black,
+    onTertiary = Color.Gray,
     onPrimaryContainer = MildGreen
 )
 

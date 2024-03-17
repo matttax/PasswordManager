@@ -1,5 +1,6 @@
 package com.matttax.passwordmanager.passwords.presentation.components
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.webkit.WebView
@@ -24,6 +25,7 @@ import com.matttax.passwordmanager.ui.common.LoginInputField
 import com.matttax.passwordmanager.ui.common.PasswordInputField
 import com.matttax.passwordmanager.ui.common.SearchField
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun AddPasswordDialog(
     onAdd: (PasswordData, Bitmap?) -> Unit,
@@ -36,6 +38,65 @@ fun AddPasswordDialog(
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
     val iconObserver = remember { IconObserver(context.getDir("imageDir", Context.MODE_PRIVATE)) }
+    YesNoDialog(
+        title = "Add password",
+        yesText = "Add",
+        onYes = {
+            onAdd(
+                PasswordData(
+                    webpageUrl = url,
+                    password = password,
+                    login = login,
+                    iconUri = iconObserver.path.absolutePath
+                ),
+                iconObserver.icon
+            )
+        },
+        onDismiss = onDismiss,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        SearchField(
+            modifier = Modifier.fillMaxWidth(),
+            onSearch = { url = it },
+            initialText = url
+        )
+        Spacer(modifier = Modifier.height(7.dp))
+        LoginInputField(
+            modifier = Modifier.fillMaxWidth(),
+            onChange = { login = it }
+        )
+        PasswordInputField(
+            modifier = Modifier.fillMaxWidth(),
+            interactionSource = interactionSource,
+            onDone = { focusManager.clearFocus() },
+            onChange = { password = it }
+        )
+        AndroidView(
+            modifier = Modifier.weight(1f),
+            factory = {
+                WebView(it).apply {
+                    webViewClient = WebViewClient()
+                    webChromeClient = iconObserver
+                    settings.javaScriptEnabled = true
+                }
+            },
+            update = {
+                it.loadUrl(url)
+            }
+        )
+    }
+}
+
+
+@Composable
+fun YesNoDialog(
+    title: String,
+    yesText: String,
+    onYes: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit = { }
+) {
     Dialog(
         onDismissRequest = onDismiss
     ) {
@@ -43,7 +104,7 @@ fun AddPasswordDialog(
             shape = RoundedCornerShape(16.dp),
         ) {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(10.dp))
@@ -52,38 +113,11 @@ fun AddPasswordDialog(
                         horizontal = 15.dp,
                         vertical = 5.dp
                     ),
-                    text = "Add password",
+                    text = title,
                     color = MaterialTheme.colorScheme.onSecondary,
                     style = MaterialTheme.typography.titleMedium
                 )
-                SearchField(
-                    modifier = Modifier.fillMaxWidth(),
-                    onSearch = { url = it },
-                    initialText = url
-                )
-                Spacer(modifier = Modifier.height(7.dp))
-                LoginInputField(
-                    modifier = Modifier.fillMaxWidth(),
-                    onChange = { login = it }
-                )
-                PasswordInputField(
-                    modifier = Modifier.fillMaxWidth(),
-                    interactionSource = interactionSource,
-                    onDone = { focusManager.clearFocus() },
-                    onChange = { password = it }
-                )
-                AndroidView(
-                    modifier = Modifier.weight(1f),
-                    factory = {
-                        WebView(it).apply {
-                            webViewClient = WebViewClient()
-                            webChromeClient = iconObserver
-                        }
-                    },
-                    update = {
-                        it.loadUrl(url)
-                    }
-                )
+                content()
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -94,27 +128,19 @@ fun AddPasswordDialog(
                     ) {
                         Text(
                             text = "Cancel",
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = MaterialTheme.colorScheme.onTertiary,
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
                     Button(
                         onClick = {
-                            onAdd(
-                                PasswordData(
-                                    webpageUrl = url,
-                                    password = password,
-                                    login = login,
-                                    iconUri = iconObserver.path.absolutePath
-                                ),
-                                iconObserver.icon
-                            )
+                            onYes()
                             onDismiss()
                         },
                         colors = ButtonDefaults.textButtonColors(Color.Transparent),
                     ) {
                         Text(
-                            text = "Add",
+                            text = yesText,
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium
                         )

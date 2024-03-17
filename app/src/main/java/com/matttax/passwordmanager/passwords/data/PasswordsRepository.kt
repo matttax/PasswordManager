@@ -49,4 +49,8 @@ class PasswordsRepository @Inject constructor(
             )
         }
     }
+
+    suspend fun clear() {
+        context.dataStore.updateData { Passwords() }
+    }
 }
